@@ -3,6 +3,8 @@ package com.example.demo.model.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.example.demo.model.entity.Role;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +17,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "users")
@@ -30,6 +34,7 @@ public class User extends BaseEntity {
     private String handle;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Profile profile;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -79,5 +84,4 @@ public class User extends BaseEntity {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
-
 }

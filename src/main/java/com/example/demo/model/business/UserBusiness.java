@@ -8,12 +8,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.example.demo.dto.NewChamado;
 import com.example.demo.dto.NewUser;
 import com.example.demo.model.entity.Profile;
 import com.example.demo.model.entity.Role;
 import com.example.demo.model.entity.User;
+import com.example.demo.repository.ChamadoRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.model.entity.Chamado;
+import com.example.demo.model.business.ChamadoBusiness;
+import enums.Situacao;
+
 
 // classe que representa o negócio
 @Business // marcar como um Bean de Negócio
@@ -22,17 +28,20 @@ public class UserBusiness {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private BCryptPasswordEncoder passwordEncoder;
+    private ChamadoRepository chamadoRepository;
     private Set<String> defaultRoles;
 
     public UserBusiness(
             UserRepository userRepository, 
             RoleRepository roleRepository,
+            ChamadoRepository chamadoRepository,
             @Value("${app.user.default.roles}") Set<String> defaultRoles) {
 
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;   
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.defaultRoles = defaultRoles;
+        this.chamadoRepository = chamadoRepository;
     }
 
 
@@ -96,6 +105,7 @@ public class UserBusiness {
         user.setProfile(profile);
 
         userRepository.save(user); 
+        criarChamadoEmail(user);
     }
 
     private String generateHandle(String email) {
@@ -106,6 +116,19 @@ public class UserBusiness {
             handle = parts[0] + i++;
         }
         return handle;
+    }
+    
+    private void criarChamadoEmail(User user){
+        NewChamado newChamado = new NewChamado(
+            "Criar",
+            "E-mail",
+            "Criar e-mail para o usuario " + user.getHandle(),
+            user.getId()
+        );
+
+        ChamadoBusiness chamadoBusiness = new ChamadoBusiness(this.chamadoRepository, this.userRepository);
+        chamadoBusiness.criarChamado(newChamado);
+
     }
 
 }

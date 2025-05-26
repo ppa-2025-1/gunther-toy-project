@@ -59,5 +59,4 @@ public abstract class BaseEntity {
     public boolean isDeleted() {
         return deleted;
     }
-
 }

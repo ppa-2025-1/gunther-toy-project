@@ -56,5 +56,4 @@ public class Profile extends BaseEntity {
     public void setType(AccountType type) {
         this.type = type;
     }
-    
 }
